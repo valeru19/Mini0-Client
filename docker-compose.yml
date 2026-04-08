@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-02-18T16-25-55Z
+    container_name: minio
+    hostname: minio
+    command: server --console-address ":9001" /data
+    ports:
+      - "9005:9000"   # S3 API
+      - "9001:9001"   # Web-консоль
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
